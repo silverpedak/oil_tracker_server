@@ -1,0 +1,10 @@
+import { Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+import { FuelDataSchema } from './common_fuel_data.schema';
+
+export type Euro95Document = HydratedDocument<Euro95>;
+
+@Schema()
+export class Euro95 extends FuelDataSchema {}
+
+export const Euro95Schema = SchemaFactory.createForClass(Euro95);

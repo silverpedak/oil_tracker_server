@@ -1,58 +1,118 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { PricesService } from './prices.service';
-import { Euro95 } from './schemas/euro95.schema';
-import { Diesel, Euro98, Lpg } from './schemas';
+import { Diesel, Euro95, Euro98, Lpg } from './schemas';
 import { DieselDto, Euro95Dto, Euro98Dto, LpgDto } from './dtos';
+import { CrudeData } from 'src/common/crude_data.model';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import {
+  CRUDE,
+  CRUDE_CACHE,
+  DIESEL,
+  DIESEL_CACHE,
+  EURO95,
+  EURO95_CACHE,
+  EURO98,
+  EURO98_CACHE,
+  LPG,
+  LPG_CACHE,
+} from './common';
+
+/**
+ * @Get requests first check for existing cache and only then call the database.
+ * @Post requests delete cache for chosen item, so a GET request will include the latest data.
+ */
 
 @Controller('prices')
 export class PricesController {
-  constructor(private readonly pricesService: PricesService) {}
+  constructor(
+    private readonly pricesService: PricesService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
-  // GET
-  @Get('/euro95')
+  @Get(CRUDE)
+  async getCrude(): Promise<CrudeData> {
+    const cache = await this.cacheManager.get<CrudeData>(CRUDE_CACHE);
+    if (cache) return cache;
+
+    const { data } = await this.pricesService.getCrude();
+    await this.cacheManager.set(CRUDE_CACHE, data, 0);
+    return data;
+  }
+
+  @Get(EURO95)
   async get95(): Promise<Euro95[]> {
-    return this.pricesService.get95();
-  }
-  @Get('/euro98')
-  async get98(): Promise<Euro98[]> {
-    return this.pricesService.get98();
-  }
-  @Get('/diesel')
-  async getDiesel(): Promise<Diesel[]> {
-    return this.pricesService.getDiesel();
-  }
-  @Get('/lpg')
-  async getLpg(): Promise<Lpg[]> {
-    return this.pricesService.getLpg();
+    const cache = await this.cacheManager.get<Euro95[]>(EURO95_CACHE);
+    if (cache) return cache;
+
+    const prices = await this.pricesService.get95();
+    await this.cacheManager.set(EURO95_CACHE, prices, 0);
+    return prices;
   }
 
-  // POST
-  @Post('/euro95')
+  @Get(EURO98)
+  async get98(): Promise<Euro98[]> {
+    const cache = await this.cacheManager.get<Euro98[]>(EURO98_CACHE);
+    if (cache) return cache;
+
+    const prices = await this.pricesService.get98();
+    await this.cacheManager.set(EURO98_CACHE, prices, 0);
+    return prices;
+  }
+
+  @Get(DIESEL)
+  async getDiesel(): Promise<Diesel[]> {
+    const cache = await this.cacheManager.get<Diesel[]>(DIESEL_CACHE);
+    if (cache) return cache;
+
+    const prices = await this.pricesService.getDiesel();
+    await this.cacheManager.set(DIESEL_CACHE, prices, 0);
+    return prices;
+  }
+
+  @Get(LPG)
+  async getLpg(): Promise<Lpg[]> {
+    const cache = await this.cacheManager.get<Lpg[]>(LPG_CACHE);
+    if (cache) return cache;
+
+    const prices = await this.pricesService.getLpg();
+    await this.cacheManager.set(LPG_CACHE, prices, 0);
+    return prices;
+  }
+
+  @Post(EURO95)
   async create95(
     @Body()
     new95: Euro95Dto,
   ): Promise<Euro95Dto> {
-    return await this.pricesService.create95(new95);
+    await this.cacheManager.del(EURO95_CACHE);
+    return this.pricesService.create95(new95);
   }
-  @Post('/euro98')
+
+  @Post(EURO98)
   async create98(
     @Body()
     new98: Euro98Dto,
   ): Promise<Euro98Dto> {
-    return await this.pricesService.create98(new98);
+    await this.cacheManager.del(EURO98_CACHE);
+    return this.pricesService.create98(new98);
   }
-  @Post('/diesel')
+
+  @Post(DIESEL)
   async createDiesel(
     @Body()
     newDiesel: DieselDto,
   ): Promise<DieselDto> {
-    return await this.pricesService.createDiesel(newDiesel);
+    await this.cacheManager.del(DIESEL_CACHE);
+    return this.pricesService.createDiesel(newDiesel);
   }
-  @Post('/lpg')
+
+  @Post(LPG)
   async createLpg(
     @Body()
     newLpg: LpgDto,
   ): Promise<LpgDto> {
-    return await this.pricesService.createLpg(newLpg);
+    await this.cacheManager.del(LPG_CACHE);
+    return this.pricesService.createLpg(newLpg);
   }
 }

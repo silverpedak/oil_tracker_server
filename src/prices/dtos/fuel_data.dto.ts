@@ -1,7 +1,10 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsNumber, Matches } from 'class-validator';
 
 export class FuelDataDto {
-  @IsString()
+  // REGEX year: 1900-2099; month: 01-12; day: 1-31; ex: 2020-01-01
+  @Matches(
+    '^(?:20\\d{2}|19\\d{2})-(?:0[1-9]|1[0-2])-(?:0?[1-9]|[12]\\d|3[01])$',
+  )
   time: string;
 
   @IsNumber()

@@ -5,9 +5,10 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { User } from './schemas/user.schema';
+
+import { CreateUserDto } from './dtos';
 import { UserService } from './users.service';
-import { CreateUserDto } from './dtos/create_user.dto';
+import { User } from './schemas';
 
 @Controller('user')
 export class UsersController {

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserDocument } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import { UserExistsException } from './exceptions/user_exists.exception';
-import { CreateUserDto } from './dtos/create_user.dto';
+
+import { CreateUserDto } from './dtos';
+import { UserExistsException } from './exceptions';
+import { User, UserDocument } from './schemas';
 
 @Injectable()
 export class UserService {

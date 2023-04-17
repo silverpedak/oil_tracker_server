@@ -5,6 +5,8 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
       }),
     }),
     PricesModule,
+    AuthModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

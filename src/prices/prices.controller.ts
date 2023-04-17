@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { PricesService } from './prices.service';
 import { Diesel, Euro95, Euro98, Lpg } from './schemas';
 import { DieselDto, Euro95Dto, Euro98Dto, LpgDto } from './dtos';
-import { CrudeData } from 'src/common/crude_data.model';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import {
@@ -17,6 +16,8 @@ import {
   LPG,
   LPG_CACHE,
 } from './common';
+import { CrudeData } from 'src/common/models';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 /**
  * @Get requests first check for existing cache and only then call the database.
@@ -40,6 +41,7 @@ export class PricesController {
     return data;
   }
 
+  @UseGuards(AuthGuard)
   @Get(EURO95)
   async get95(): Promise<Euro95[]> {
     const cache = await this.cacheManager.get<Euro95[]>(EURO95_CACHE);

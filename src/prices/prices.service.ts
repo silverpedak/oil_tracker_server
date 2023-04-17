@@ -13,12 +13,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
-import { CrudeData } from 'src/common/crude_data.model';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { CRUDE_CACHE } from './common';
+import { CrudeData } from 'src/common/models';
 
 @Injectable()
 export class PricesService {

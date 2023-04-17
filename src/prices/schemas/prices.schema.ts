@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { FuelData } from 'src/common/fuel_data.model';
+import { FuelData } from 'src/common/models';
 
 export type PricesDocument = HydratedDocument<Prices>;
 

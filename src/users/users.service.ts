@@ -28,16 +28,17 @@ export class UserService {
 
     const hash = bcrypt.hashSync(signUpDto.password, 10);
     signUpDto.password = hash;
-    const { _id, username, firstName, lastName, password } =
+    const { _id, username, firstName, lastName, password, roles } =
       await this.usersModel.create(signUpDto);
 
     // Serialization. To remove password from response object need to return a new instance of User.
     return new User({
       userId: _id.toString(),
-      username: username,
-      firstName: firstName,
-      lastName: lastName,
-      password: password,
+      username,
+      firstName,
+      lastName,
+      password,
+      roles,
     });
   }
 }

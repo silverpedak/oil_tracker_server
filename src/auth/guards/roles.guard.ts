@@ -1,39 +1,51 @@
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
-  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Reflector } from '@nestjs/core';
+import { Role } from '../enums';
+import { ROLES_KEY } from '../decorators';
 import { Request } from 'express';
+import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class RolesGuard implements CanActivate {
   private jwtSecret: string;
 
   constructor(
+    private reflector: Reflector,
     private jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private configService: ConfigService,
   ) {
     this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException('missing JWT');
     }
+
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.jwtSecret,
       });
-      request['user'] = payload;
+      return requiredRoles.some((role) => payload?.roles?.includes(role));
     } catch {
       throw new UnauthorizedException('unauthorized JWT');
     }
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

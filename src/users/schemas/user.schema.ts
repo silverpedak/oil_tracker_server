@@ -1,18 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Role } from 'src/auth/enums';
+
+import { Role } from 'src/common';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({ id: true })
 export class User {
   _id: mongoose.Schema.Types.ObjectId;
 
-  @Prop()
-  userId: string;
-
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   username: string;
 
   @Exclude()
@@ -27,6 +25,9 @@ export class User {
 
   @Prop()
   roles: Role[];
+
+  @Prop()
+  refreshToken: string;
 
   // For serialization to work(removes password from response object)
   constructor(partial: Partial<User>) {

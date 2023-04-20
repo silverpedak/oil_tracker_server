@@ -5,11 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '../enums';
 import { ROLES_KEY } from '../decorators';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+
+import { Role } from '../enums';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -20,7 +21,7 @@ export class RolesGuard implements CanActivate {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {
-    this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
+    this.jwtSecret = this.configService.get<string>('JWT_ACCESS_SECRET') || '';
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -42,6 +43,7 @@ export class RolesGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.jwtSecret,
       });
+      console.log(payload);
       return requiredRoles.some((role) => payload?.roles?.includes(role));
     } catch {
       throw new UnauthorizedException('unauthorized JWT');

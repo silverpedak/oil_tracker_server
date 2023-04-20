@@ -1,8 +1,11 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerGuard } from '@nestjs/throttler';
+
 import { PricesController } from './prices.controller';
 import { PricesService } from './prices.service';
-import { MongooseModule } from '@nestjs/mongoose';
-
 import {
   Diesel,
   DieselSchema,
@@ -13,9 +16,6 @@ import {
   Lpg,
   LpgSchema,
 } from './schemas';
-import { HttpModule } from '@nestjs/axios';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   imports: [

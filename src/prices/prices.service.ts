@@ -1,4 +1,15 @@
+import { AxiosResponse } from 'axios';
+import { Cache } from 'cache-manager';
+import mongoose from 'mongoose';
+import { HttpService } from '@nestjs/axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import { Cron } from '@nestjs/schedule';
+
+import { CRUDE_CACHE } from './common';
+import { CrudeData } from 'src/common/models';
 import {
   Diesel,
   DieselDocument,
@@ -9,16 +20,6 @@ import {
   Lpg,
   LpgDocument,
 } from './schemas';
-import { InjectModel } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
-import { HttpService } from '@nestjs/axios';
-import { AxiosResponse } from 'axios';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { Cron } from '@nestjs/schedule';
-import { ConfigService } from '@nestjs/config';
-import { CRUDE_CACHE } from './common';
-import { CrudeData } from 'src/common/models';
 
 @Injectable()
 export class PricesService {

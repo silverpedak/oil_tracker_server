@@ -1,20 +1,33 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Post,
-  Request,
+  Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+
 import { SignInDto } from './dtos';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './guards/auth.guard';
+import { AccessTokenGuard, RefreshTokenGuard } from '../common';
+import { CreateUserDto, User, UserService } from 'src/users';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
+
+  @UseInterceptors(ClassSerializerInterceptor) // removes password from response object
+  @Post('/signup')
+  async signUp(@Body() signUpDto: CreateUserDto): Promise<User> {
+    return this.userService.create(signUpDto);
+  }
 
   @HttpCode(HttpStatus.OK)
   @Post('/login')
@@ -22,9 +35,23 @@ export class AuthController {
     return this.authService.signIn(signInDto.username, signInDto.password);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AccessTokenGuard)
+  @Get('/logout')
+  async logout(@Req() req: any) {
+    this.authService.logout(req.user.sub);
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Get('/refresh')
+  async refreshTokens(@Req() req: any) {
+    const userId = req.user.payload.sub;
+    const refreshToken = req.user.token;
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get('profile')
-  getProfile(@Request() req: any) {
+  getProfile(@Req() req: any) {
     return req.user;
   }
 }

@@ -17,9 +17,7 @@ import {
 } from './common';
 import { DieselDto, Euro95Dto, Euro98Dto, LpgDto } from './dtos';
 import { Diesel, Euro95, Euro98, Lpg } from './schemas';
-import { Roles } from 'src/auth/decorators';
-import { Role } from 'src/auth/enums';
-import { CrudeData } from 'src/common/models';
+import { CrudeData, Roles, Role } from 'src/common';
 
 /**
  * @Get requests first check for existing cache and only then call the database.

@@ -9,14 +9,14 @@ import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AccessTokenGuard implements CanActivate {
   private jwtSecret: string;
 
   constructor(
     private jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
+    this.jwtSecret = this.configService.get<string>('JWT_ACCESS_SECRET') || '';
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

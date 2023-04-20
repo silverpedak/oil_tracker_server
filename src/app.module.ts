@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { PricesModule } from './prices/prices.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+
+import { AuthModule } from './auth';
+import { PricesModule } from './prices';
+import { UsersModule } from './users';
 
 @Module({
   imports: [

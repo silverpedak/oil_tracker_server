@@ -11,11 +11,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { SignInDto } from './dtos';
+import { SignInDto, TokensDto } from './dtos';
 import { AuthService } from './auth.service';
 import { AccessTokenGuard, RefreshTokenGuard } from '../common';
 import { CreateUserDto, User, UserService } from 'src/users';
-import { TokensDto } from './dtos/tokens.dto';
 
 @Controller('auth')
 export class AuthController {

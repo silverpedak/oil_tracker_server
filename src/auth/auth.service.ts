@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
 import { UserService } from 'src/users';
-import { TokensDto } from './dtos/tokens.dto';
+import { TokensDto } from './dtos';
 
 @Injectable()
 export class AuthService {

@@ -15,6 +15,7 @@ import { SignInDto } from './dtos';
 import { AuthService } from './auth.service';
 import { AccessTokenGuard, RefreshTokenGuard } from '../common';
 import { CreateUserDto, User, UserService } from 'src/users';
+import { TokensDto } from './dtos/tokens.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +32,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('/login')
-  async login(@Body() signInDto: SignInDto) {
+  async login(@Body() signInDto: SignInDto): Promise<TokensDto> {
     return this.authService.signIn(signInDto.username, signInDto.password);
   }
 
@@ -43,7 +44,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard)
   @Get('/refresh')
-  async refreshTokens(@Req() req: any) {
+  async refreshTokens(@Req() req: any): Promise<TokensDto> {
     const userId = req.user.payload.sub;
     const refreshToken = req.user.token;
     return this.authService.refreshTokens(userId, refreshToken);

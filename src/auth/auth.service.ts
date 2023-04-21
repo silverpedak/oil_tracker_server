@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
 import { UserService } from 'src/users';
+import { TokensDto } from './dtos/tokens.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signIn(username: string, pass: string): Promise<any> {
+  async signIn(username: string, pass: string): Promise<TokensDto> {
     const user = await this.usersService.findByUsername(username);
     if (!user) {
       throw new NotFoundException('username not found');
@@ -43,7 +44,7 @@ export class AuthService {
     });
   }
 
-  async getTokens(userId: string, username: string) {
+  async getTokens(userId: string, username: string): Promise<TokensDto> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -66,13 +67,13 @@ export class AuthService {
         },
       ),
     ]);
-    return {
-      accessToken,
-      refreshToken,
-    };
+    return { accessToken, refreshToken };
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
+  async refreshTokens(
+    userId: string,
+    refreshToken: string,
+  ): Promise<TokensDto> {
     const user = await this.usersService.findById(userId);
     if (!user || !user.refreshToken) {
       throw new ForbiddenException('access denied');

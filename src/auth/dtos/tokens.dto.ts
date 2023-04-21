@@ -8,9 +8,4 @@ export class TokensDto {
   @IsString()
   @IsNotEmpty()
   refreshToken: string;
-
-  // constructor(accessToken: string, refreshToken: string) {
-  //   this.accessToken = accessToken;
-  //   this.refreshToken = refreshToken;
-  // }
 }

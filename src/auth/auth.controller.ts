@@ -13,7 +13,11 @@ import {
 
 import { SignInDto, TokensDto } from './dtos';
 import { AuthService } from './auth.service';
-import { AccessTokenGuard, RefreshTokenGuard } from '../common';
+import {
+  AccessTokenGuard,
+  AuthenticatedRequest,
+  RefreshTokenGuard,
+} from '../common';
 import { CreateUserDto, User, UserService } from 'src/users';
 
 @Controller('auth')
@@ -37,21 +41,21 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Get('/logout')
-  async logout(@Req() req: any) {
+  async logout(@Req() req: AuthenticatedRequest) {
     this.authService.logout(req.user.sub);
   }
 
   @UseGuards(RefreshTokenGuard)
   @Get('/refresh')
-  async refreshTokens(@Req() req: any): Promise<TokensDto> {
-    const userId = req.user.payload.sub;
+  async refreshTokens(@Req() req: AuthenticatedRequest): Promise<TokensDto> {
+    const userId = req.user.sub;
     const refreshToken = req.user.token;
     return this.authService.refreshTokens(userId, refreshToken);
   }
 
   @UseGuards(AccessTokenGuard)
   @Get('profile')
-  getProfile(@Req() req: any) {
+  getProfile(@Req() req: AuthenticatedRequest) {
     return req.user;
   }
 }

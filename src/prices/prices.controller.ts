@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { PricesService } from './prices.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -43,7 +43,7 @@ export class PricesController {
   }
 
   @Get(EURO95)
-  async get95(@Request() req: any): Promise<Euro95[]> {
+  async get95(): Promise<Euro95[]> {
     const cache = await this.cacheManager.get<Euro95[]>(EURO95_CACHE);
     if (cache) {
       return cache;

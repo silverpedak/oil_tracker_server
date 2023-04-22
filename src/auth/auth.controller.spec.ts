@@ -1,10 +1,10 @@
 import { Test } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 
-import { AuthController } from '../auth.controller';
-import { AuthService } from '../auth.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { UserService } from 'src/users';
-import { jwtPayloadStub, signInDtoStub, userStub } from '../../../test/stubs';
+import { jwtPayloadStub, signInDtoStub, userStub } from '../../test/stubs';
 
 let httpMocks = require('node-mocks-http');
 describe('AuthController', () => {

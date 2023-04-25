@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
 import { PricesService } from './prices.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -18,6 +18,7 @@ import {
 import { DieselDto, Euro95Dto, Euro98Dto, LpgDto } from './dtos';
 import { Diesel, Euro95, Euro98, Lpg } from './schemas';
 import { CrudeData, Roles, Role } from 'src/common';
+import { CrudeQueryDto } from './dtos/get_crude_query.dto';
 
 /**
  * @Get requests first check for existing cache and only then call the database.
@@ -32,12 +33,12 @@ export class PricesController {
   ) {}
 
   @Get(CRUDE)
-  async getCrude(): Promise<CrudeData> {
+  async getCrude(@Query() query: CrudeQueryDto): Promise<CrudeData> {
     const cache = await this.cacheManager.get<CrudeData>(CRUDE_CACHE);
     if (cache) {
       return cache;
     }
-    const { data } = await this.pricesService.getCrude();
+    const { data } = await this.pricesService.getCrudeData(query);
     await this.cacheManager.set(CRUDE_CACHE, data, 0);
     return data;
   }

@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
 
 import { CRUDE_CACHE } from './common';
-import { CrudeData } from 'src/common/models';
+import { CrudeData, DEFAULT_QUERY } from 'src/common';
 import {
   Diesel,
   DieselDocument,
@@ -20,12 +20,11 @@ import {
   Lpg,
   LpgDocument,
 } from './schemas';
+import { CrudeQueryDto } from './dtos/get_crude_query.dto';
+import { Order } from 'src/common/enums/order.enum';
 
 @Injectable()
 export class PricesService {
-  private baseUrl: string | undefined;
-  private key: string | undefined;
-
   constructor(
     @InjectModel(Euro95.name)
     private readonly euro95Model: mongoose.Model<Euro95Document>,
@@ -38,50 +37,38 @@ export class PricesService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-  ) {
-    this.baseUrl = this.configService.get<string>('CRUDE_BASE_URL');
-    this.key = this.configService.get<string>('NASDAQ_API_KEY');
-  }
+  ) {}
 
   // calls Nasdaq API mon-fri 13:30:01, cahes response
+  // Add logger
   @Cron('1 30 13 * * 1-5')
   async handleCrudeCron() {
-    console.log('cron called');
-    if (this.baseUrl) {
-      const { data } = await this.httpService.axiosRef.get<CrudeData>(
-        this.baseUrl,
-        {
-          params: {
-            start_date: '2020-01-01',
-            order: 'asc',
-            api_key: this.key,
-          },
-        },
-      );
-      this.cacheManager.set(CRUDE_CACHE, data, 0);
-    } else {
-      throw new Error('CRUDE_BASE_URL missing');
-    }
+    const { data } = await this.getCrudeData();
+    this.cacheManager.set(CRUDE_CACHE, data, 0);
   }
 
-  // GET
-  getCrude(): Promise<AxiosResponse<CrudeData>> {
-    console.log('crude service called');
-    if (this.baseUrl && this.key) {
-      return this.httpService.axiosRef.get<CrudeData>(this.baseUrl, {
-        params: {
-          start_date: '2020-01-01',
-          order: 'asc',
-          api_key: this.key,
-        },
-      });
-    } else {
-      throw new Error('CRUDE_BASE_URL or NASDAQ_API_KEY missing');
+  async getCrudeData(
+    query: CrudeQueryDto = DEFAULT_QUERY,
+  ): Promise<AxiosResponse<CrudeData>> {
+    const baseUrl = this.configService.get<string>('NASDAQ_BASE_URL');
+    const apiKey = this.configService.get<string>('NASDAQ_API_KEY');
+    if (!baseUrl || !apiKey) {
+      throw new Error(
+        'Missing required configuration values: NASDAQ_BASE_URL and/or NASDAQ_API_KEY',
+      );
     }
+    const params = {
+      start_date: query.start,
+      order: query.order,
+      api_key: apiKey,
+    };
+    return this.httpService.axiosRef<CrudeData>(baseUrl, {
+      method: 'GET',
+      params,
+    });
   }
 
   async get95(): Promise<Euro95[]> {
-    console.log('euro95 service called');
     return await this.euro95Model.find();
   }
 

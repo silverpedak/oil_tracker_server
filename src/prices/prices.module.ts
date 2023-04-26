@@ -19,10 +19,12 @@ import {
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Euro95.name, schema: Euro95Schema }]),
-    MongooseModule.forFeature([{ name: Euro98.name, schema: Euro98Schema }]),
-    MongooseModule.forFeature([{ name: Diesel.name, schema: DieselSchema }]),
-    MongooseModule.forFeature([{ name: Lpg.name, schema: LpgSchema }]),
+    MongooseModule.forFeature([
+      { name: Euro95.name, schema: Euro95Schema },
+      { name: Euro98.name, schema: Euro98Schema },
+      { name: Diesel.name, schema: DieselSchema },
+      { name: Lpg.name, schema: LpgSchema },
+    ]),
     HttpModule,
   ],
   controllers: [PricesController],

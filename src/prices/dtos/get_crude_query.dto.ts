@@ -12,7 +12,7 @@ export class CrudeQueryDto {
   )
   @IsString()
   @IsOptional()
-  start: string = '2020-01-01';
+  start?: string = '2020-01-01';
 
   @IsEnum(Order)
   @IsString()

@@ -32,22 +32,22 @@ describe('PricesController', () => {
         jest
           .spyOn(cacheManager, 'get')
           .mockResolvedValueOnce(getCrudeDataStub());
-        const result = await pricesController.getCrude();
+        const result = await pricesController.getCrude({});
         expect(result).toEqual(getCrudeDataStub());
       });
 
       it('should cache data when no cached data', async () => {
         jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(null);
-        await pricesController.getCrude();
+        await pricesController.getCrude({});
         expect(cacheManager.set).toHaveBeenCalled();
       });
 
       it('should return fresh data when no cached data', async () => {
         jest.spyOn(cacheManager, 'get').mockResolvedValueOnce(null);
-        pricesService.getCrude = jest.fn().mockResolvedValueOnce({
+        pricesService.getCrudeData = jest.fn().mockResolvedValueOnce({
           data: getCrudeDataStub(),
         });
-        const result = await pricesController.getCrude();
+        const result = await pricesController.getCrude({});
         expect(result).toEqual(getCrudeDataStub());
         expect(cacheManager.get).toHaveBeenCalled();
       });

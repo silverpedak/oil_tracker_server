@@ -1,6 +1,6 @@
-import { TokensDto } from 'src/auth';
+import { Tokens } from 'src/common';
 
-export const tokensDtoStub = (): TokensDto => ({
+export const tokensDtoStub = (): Tokens => ({
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
 });

@@ -1,3 +1,3 @@
-export * from './auth.guard';
+export * from './access-token.guard';
 export * from './roles.guard';
-export * from './refresh.guard';
+export * from './refresh-token.guard';

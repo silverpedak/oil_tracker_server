@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-
-import { AuthModule } from './auth';
-import { PricesModule } from './prices';
-import { UsersModule } from './users';
+import { AuthModule, PricesModule, UsersModule } from './modules';
+import { IConfigModule } from './modules/config/config.module';
+import { IConfigService } from './modules/config/config.service';
 
 @Module({
   imports: [
@@ -19,15 +18,16 @@ import { UsersModule } from './users';
       limit: 100, // 100 requests
     }),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        uri: config.get<string>('MONGO_URI'),
+      imports: [IConfigModule],
+      inject: [IConfigService],
+      useFactory: async (config: IConfigService) => ({
+        uri: config.getMongoUri(),
       }),
     }),
     PricesModule,
     AuthModule,
     UsersModule,
+    IConfigModule,
   ],
 })
 export class AppModule {}

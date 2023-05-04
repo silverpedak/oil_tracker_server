@@ -1,5 +1,5 @@
 import mongoose, { Types } from 'mongoose';
-import { User } from 'src/users';
+import { User } from 'src/modules';
 
 export const userStub = (): User => {
   return new User({

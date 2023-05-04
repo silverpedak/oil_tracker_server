@@ -1,5 +1,5 @@
-import { CrudeQueryDto } from 'src/prices/dtos/get_crude_query.dto';
-import { Order } from './enums/order.enum';
+import { CrudeQueryDto } from 'src/modules/prices/dtos/crude-query.dto';
+import { Order } from './enums';
 
 export const DEFAULT_QUERY: CrudeQueryDto = {
   start: '2020-01-01',
